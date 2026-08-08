@@ -1,0 +1,65 @@
+# -----------------------------------------
+# Repository Types
+# -----------------------------------------
+
+type Repo {
+  id: ID!
+  name: String!
+  description: String
+  isPrivate: Boolean!
+  createdAt: String!
+  updatedAt: String!
+
+  # Relationships
+  owner: User!
+  issues: [Issue!]!
+}
+
+# -----------------------------------------
+# Inputs
+# -----------------------------------------
+
+input CreateRepoInput {
+  name: String!
+  description: String
+  isPrivate: Boolean
+}
+
+input UpdateRepoInput {
+  name: String
+  description: String
+  isPrivate: Boolean
+}
+
+# -----------------------------------------
+# Queries & Mutations
+# -----------------------------------------
+
+type Query {
+  """
+  Fetch a specific repository by its ID
+  """
+  repo(id: ID!): Repo
+
+  """
+  Fetch all public repositories (or repositories accessible to the authenticated user)
+  """
+  repos: [Repo!]!
+}
+
+type Mutation {
+  """
+  Create a new repository for the currently authenticated user
+  """
+  createRepo(input: CreateRepoInput!): Repo!
+
+  """
+  Update a repository's details (must be the owner)
+  """
+  updateRepo(id: ID!, input: UpdateRepoInput!): Repo!
+
+  """
+  Delete a repository (must be the owner)
+  """
+  deleteRepo(id: ID!): Boolean!
+}
