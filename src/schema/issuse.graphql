@@ -27,7 +27,7 @@ type Issue {
 input CreateIssueInput {
   title: String!
   body: String
-  repoId: ID! # Requires the ID of the repository where the issue is being created
+  repoId: ID!
 }
 
 input UpdateIssueInput {
@@ -47,9 +47,9 @@ type Query {
   issue(id: ID!): Issue
 
   """
-  Fetch all issues for a specific repository
+  Fetch all issues for a specific repository with pagination
   """
-  issuesByRepo(repoId: ID!): [Issue!]!
+  issuesByRepo(repoId: ID!, limit: Int, offset: Int): [Issue!]!
 }
 
 type Mutation {

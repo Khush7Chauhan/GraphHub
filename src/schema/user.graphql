@@ -1,3 +1,7 @@
+# -----------------------------------------
+# User Types
+# -----------------------------------------
+
 type User {
   id: ID!
   username: String!
@@ -6,7 +10,6 @@ type User {
   updatedAt: String!
 
   # Relationships 
-  # (These rely on the Repo and Issue types that will be defined in their respective files)
   repos: [Repo!]!
   issues: [Issue!]!
 }
@@ -52,9 +55,9 @@ type Query {
   user(id: ID!): User
 
   """
-  Fetch all users (Consider adding pagination inputs here later)
+  Fetch all users with pagination
   """
-  users: [User!]!
+  users(limit: Int, offset: Int): [User!]!
 }
 
 type Mutation {

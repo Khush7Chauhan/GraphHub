@@ -42,9 +42,9 @@ type Query {
   repo(id: ID!): Repo
 
   """
-  Fetch all public repositories (or repositories accessible to the authenticated user)
+  Fetch all public repositories with pagination
   """
-  repos: [Repo!]!
+  repos(limit: Int, offset: Int): [Repo!]!
 }
 
 type Mutation {
