@@ -23,6 +23,8 @@ interface IssueByIdArgs {
 
 interface IssuesByRepoArgs {
   repoId: string;
+  limit?: number;
+  offset?: number;
 }
 
 export const issueResolvers = {
@@ -33,9 +35,12 @@ export const issueResolvers = {
       });
     },
 
-    issuesByRepo: async (_: unknown, { repoId }: IssuesByRepoArgs, ctx: Context) => {
+    issuesByRepo: async (_: unknown, { repoId, limit, offset }: IssuesByRepoArgs, ctx: Context) => {
       return ctx.prisma.issue.findMany({
         where: { repoId },
+        take: limit ?? 10,  
+        skip: offset ?? 0, 
+        orderBy: { createdAt: 'desc' },
       });
     },
   },
@@ -71,6 +76,7 @@ export const issueResolvers = {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to delete an issue.');
       }
+
       await ctx.prisma.issue.delete({
         where: { id },
       });
@@ -82,6 +88,7 @@ export const issueResolvers = {
     author: async (parent: { authorId: string }, _: unknown, ctx: Context) => {
       return ctx.services.userService.getUserById(parent.authorId);
     },
+
     repo: async (parent: { repoId: string }, _: unknown, ctx: Context) => {
       return ctx.services.repoService.getRepoById(parent.repoId);
     },

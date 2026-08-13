@@ -26,6 +26,11 @@ interface UserByIdArgs {
   id: string;
 }
 
+interface PaginationArgs {
+  limit?: number;
+  offset?: number;
+}
+
 export const userResolvers = {
   Query: {
     me: async (_: unknown, __: unknown, ctx: Context) => {
@@ -39,8 +44,8 @@ export const userResolvers = {
       return ctx.services.userService.getUserById(id);
     },
 
-    users: async (_: unknown, __: unknown, ctx: Context) => {
-      return ctx.services.userService.getAllUsers();
+    users: async (_: unknown, { limit, offset }: PaginationArgs, ctx: Context) => {
+      return ctx.services.userService.getAllUsers({ limit, offset });
     },
   },
 
@@ -48,9 +53,11 @@ export const userResolvers = {
     register: async (_: unknown, { input }: RegisterArgs, ctx: Context) => {
       return ctx.services.authService.register(input);
     },
+
     login: async (_: unknown, { input }: LoginArgs, ctx: Context) => {
       return ctx.services.authService.login(input);
     },
+
     updateUser: async (_: unknown, { input }: UpdateUserArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in.');
@@ -75,7 +82,9 @@ export const userResolvers = {
       if (ctx.loaders?.userIssuesLoader) {
         return ctx.loaders.userIssuesLoader.load(parent.id);
       }
-      return ctx.services.issueService.getIssuesByUserId(parent.id);
+      return ctx.prisma.issue.findMany({
+        where: { authorId: parent.id }
+      });
     },
   },
 };

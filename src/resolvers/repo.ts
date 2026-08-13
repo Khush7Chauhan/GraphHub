@@ -21,13 +21,19 @@ interface RepoByIdArgs {
   id: string;
 }
 
+interface PaginationArgs {
+  limit?: number;
+  offset?: number;
+}
+
 export const repoResolvers = {
   Query: {
     repo: async (_: unknown, { id }: RepoByIdArgs, ctx: Context) => {
       return ctx.services.repoService.getRepoById(id);
     },
-    repos: async (_: unknown, __: unknown, ctx: Context) => {
-      return ctx.services.repoService.getAllRepos();
+
+    repos: async (_: unknown, { limit, offset }: PaginationArgs, ctx: Context) => {
+      return ctx.services.repoService.getAllRepos({ limit, offset });
     },
   },
 
@@ -58,6 +64,7 @@ export const repoResolvers = {
     owner: async (parent: { ownerId: string }, _: unknown, ctx: Context) => {
       return ctx.services.userService.getUserById(parent.ownerId);
     },
+
     issues: async (parent: { id: string }, _: unknown, ctx: Context) => {
       return ctx.prisma.issue.findMany({
         where: { repoId: parent.id },
