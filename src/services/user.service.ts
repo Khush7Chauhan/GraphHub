@@ -3,22 +3,31 @@ const { PrismaClient } = pkg as any;
 const prisma = new PrismaClient();
 
 export interface UpdateUserInput {
-    username? : string,
-    email?: string
+  username?: string;
+  email?: string;
 }
 
-export const etUsserById = async (id:string)=> {
-    const user = await prisma.user.findUnique({
-        where: { id },
-    });
-    if (!user){
-        throw new Error('User not found.');
-    }
-    return user;
+export interface PaginationParams {
+  limit?: number;
+  offset?: number;
+}
+
+export const getUserById = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  if (!user) {
+    throw new Error('User not found.');
+  }
+
+  return user;
 };
 
-export const getAllUsers = async () => {
+export const getAllUsers = async ({ limit = 10, offset = 0 }: PaginationParams = {}) => {
   return prisma.user.findMany({
+    take: limit,
+    skip: offset,
     orderBy: { createdAt: 'desc' },
   });
 };
