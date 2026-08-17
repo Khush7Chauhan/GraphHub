@@ -29,19 +29,16 @@ interface IssuesByRepoArgs {
 
 export const issueResolvers = {
   Query: {
-    // Delegates to issueService
     issue: async (_: unknown, { id }: IssueByIdArgs, ctx: Context) => {
       return ctx.services.issueService.getIssueById(id);
     },
 
-    // Delegates to issueService with pagination
     issuesByRepo: async (_: unknown, { repoId, limit, offset }: IssuesByRepoArgs, ctx: Context) => {
       return ctx.services.issueService.getIssuesByRepo(repoId, { limit, offset });
     },
   },
 
   Mutation: {
-    // Delegates to issueService
     createIssue: async (_: unknown, { input }: CreateIssueArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to create an issue.');
@@ -49,7 +46,6 @@ export const issueResolvers = {
       return ctx.services.issueService.createIssue(ctx.userId, input);
     },
 
-    // Delegates to issueService
     updateIssue: async (_: unknown, { id, input }: UpdateIssueArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to update an issue.');
@@ -57,7 +53,6 @@ export const issueResolvers = {
       return ctx.services.issueService.updateIssue(ctx.userId, id, input);
     },
 
-    // Delegates to issueService
     deleteIssue: async (_: unknown, { id }: IssueByIdArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to delete an issue.');
@@ -67,12 +62,10 @@ export const issueResolvers = {
   },
 
   Issue: {
-    // Resolves the 'author' field using userService
     author: async (parent: { authorId: string }, _: unknown, ctx: Context) => {
       return ctx.services.userService.getUserById(parent.authorId);
     },
 
-    // Resolves the 'repo' field using repoService
     repo: async (parent: { repoId: string }, _: unknown, ctx: Context) => {
       return ctx.services.repoService.getRepoById(parent.repoId);
     },
