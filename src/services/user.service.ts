@@ -1,6 +1,6 @@
+import { prisma } from '../db.js';
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg as any;
-const prisma = new PrismaClient();
 
 export interface UpdateUserInput {
   username?: string;
@@ -8,8 +8,8 @@ export interface UpdateUserInput {
 }
 
 export interface PaginationParams {
-  limit?: number;
-  offset?: number;
+  limit?: number | undefined;
+  offset?: number | undefined;
 }
 
 export const getUserById = async (id: string) => {
@@ -33,13 +33,20 @@ export const getAllUsers = async ({ limit = 10, offset = 0 }: PaginationParams =
 };
 
 export const updateUser = async (id: string, data: UpdateUserInput) => {
-  if (data.username || data.email) {
+  // 1. Dynamically build the OR array so undefined values are never passed
+  const orConditions = [];
+  if (data.username !== undefined) {
+    orConditions.push({ username: data.username });
+  }
+  if (data.email !== undefined) {
+    orConditions.push({ email: data.email });
+  }
+
+  // 2. Only run the collision check if there are actually fields to check
+  if (orConditions.length > 0) {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-          { username: data.username },
-          { email: data.email },
-        ],
+        OR: orConditions,
         NOT: { id },
       },
     });
@@ -54,9 +61,13 @@ export const updateUser = async (id: string, data: UpdateUserInput) => {
     }
   }
 
+  // 3. Conditionally spread the data payload to strip out undefined keys safely
   return prisma.user.update({
     where: { id },
-    data,
+    data: {
+      ...(data.username !== undefined && { username: data.username }),
+      ...(data.email !== undefined && { email: data.email }),
+    },
   });
 };
 

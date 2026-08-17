@@ -1,6 +1,6 @@
+import { prisma } from '../db.js';
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg as any;
-const prisma = new PrismaClient();
 
 export interface CreateRepoInput {
   name: string;
@@ -15,8 +15,8 @@ export interface UpdateRepoInput {
 }
 
 export interface PaginationParams {
-  limit?: number;
-  offset?: number;
+  limit?: number |undefined;
+  offset?: number | undefined;
 }
 
 export const getRepoById = async (id: string) => {

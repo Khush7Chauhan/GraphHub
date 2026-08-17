@@ -1,6 +1,6 @@
+import { prisma } from '../db.js';
 import pkg from "@prisma/client"; 
 const { PrismaClient } = pkg as any; 
-const prisma = new PrismaClient();
 
 export interface CreateIssueInput {
   title: string;
@@ -15,8 +15,8 @@ export interface UpdateIssueInput {
 }
 
 export interface PaginationParams {
-  limit?: number;
-  offset?: number;
+  limit?: number | undefined;
+  offset?: number | undefined;
 }
 
 /**
@@ -61,7 +61,7 @@ export const createIssue = async (userId: string, data: CreateIssueInput) => {
   return prisma.issue.create({
     data: {
       title: data.title,
-      body: data.body,
+      body: data.body ?? null,
       repoId: data.repoId,
       authorId: userId,
     },
