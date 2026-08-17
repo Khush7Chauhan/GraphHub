@@ -9,7 +9,9 @@
     "moduleResolution": "NodeNext",
     "target": "ES2022",
     "lib": ["ES2022"],
-    "types": ["node"],
+    
+    // Explicitly load node and express types to fix the Apollo export issue
+    "types": ["node", "express"], 
     "esModuleInterop": true,
 
     // 3. Output Configuration
@@ -24,9 +26,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
 
-    // 5. Modern Module Syntax (Optional but recommended for Vite/Prisma)
-    "isolatedModules": true,
-    "moduleDetection": "force"
+    // 5. Modern Module Syntax
+    "isolatedModules": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -1,0 +1,70 @@
+# -----------------------------------------
+# Issue Types & Enums
+# -----------------------------------------
+
+enum Status {
+  OPEN
+  CLOSED
+}
+
+type Issue {
+  id: ID!
+  title: String!
+  body: String
+  status: Status!
+  createdAt: String!
+  updatedAt: String!
+
+  # Relationships
+  author: User!
+  repo: Repo!
+}
+
+# -----------------------------------------
+# Inputs
+# -----------------------------------------
+
+input CreateIssueInput {
+  title: String!
+  body: String
+  repoId: ID!
+}
+
+input UpdateIssueInput {
+  title: String
+  body: String
+  status: Status
+}
+
+# -----------------------------------------
+# Queries & Mutations
+# -----------------------------------------
+
+type Query {
+  """
+  Fetch a specific issue by its ID
+  """
+  issue(id: ID!): Issue
+
+  """
+  Fetch all issues for a specific repository with pagination
+  """
+  issuesByRepo(repoId: ID!, limit: Int, offset: Int): [Issue!]!
+}
+
+type Mutation {
+  """
+  Create a new issue in a specific repository
+  """
+  createIssue(input: CreateIssueInput!): Issue!
+
+  """
+  Update an issue's details or change its status (e.g., OPEN to CLOSED)
+  """
+  updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
+
+  """
+  Delete an issue (usually restricted to the author or the repo owner)
+  """
+  deleteIssue(id: ID!): Boolean!
+}

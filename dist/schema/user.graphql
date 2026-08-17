@@ -1,0 +1,83 @@
+# -----------------------------------------
+# User Types
+# -----------------------------------------
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  createdAt: String!
+  updatedAt: String!
+
+  # Relationships 
+  repos: [Repo!]!
+  issues: [Issue!]!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+# -----------------------------------------
+# Inputs
+# -----------------------------------------
+
+input RegisterInput {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  username: String
+  email: String
+}
+
+# -----------------------------------------
+# Queries & Mutations
+# -----------------------------------------
+
+type Query {
+  """
+  Fetch the currently authenticated user
+  """
+  me: User
+
+  """
+  Fetch a specific user by ID
+  """
+  user(id: ID!): User
+
+  """
+  Fetch all users with pagination
+  """
+  users(limit: Int, offset: Int): [User!]!
+}
+
+type Mutation {
+  """
+  Register a new user and return an auth token
+  """
+  register(input: RegisterInput!): AuthPayload!
+
+  """
+  Authenticate an existing user and return a token
+  """
+  login(input: LoginInput!): AuthPayload!
+
+  """
+  Update the currently authenticated user's details
+  """
+  updateUser(input: UpdateUserInput!): User!
+
+  """
+  Delete the currently authenticated user's account
+  """
+  deleteUser: Boolean!
+}
