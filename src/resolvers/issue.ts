@@ -1,4 +1,4 @@
-import { Context } from '../context';
+import { Context } from '../context/index.js';
 
 interface CreateIssueArgs {
   input: {
@@ -29,66 +29,50 @@ interface IssuesByRepoArgs {
 
 export const issueResolvers = {
   Query: {
+    // Delegates to issueService
     issue: async (_: unknown, { id }: IssueByIdArgs, ctx: Context) => {
-      return ctx.prisma.issue.findUnique({
-        where: { id },
-      });
+      return ctx.services.issueService.getIssueById(id);
     },
 
+    // Delegates to issueService with pagination
     issuesByRepo: async (_: unknown, { repoId, limit, offset }: IssuesByRepoArgs, ctx: Context) => {
-      return ctx.prisma.issue.findMany({
-        where: { repoId },
-        take: limit ?? 10,  
-        skip: offset ?? 0, 
-        orderBy: { createdAt: 'desc' },
-      });
+      return ctx.services.issueService.getIssuesByRepo(repoId, { limit, offset });
     },
   },
 
   Mutation: {
+    // Delegates to issueService
     createIssue: async (_: unknown, { input }: CreateIssueArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to create an issue.');
       }
-
-      return ctx.prisma.issue.create({
-        data: {
-          title: input.title,
-          body: input.body,
-          repoId: input.repoId,
-          authorId: ctx.userId, 
-        },
-      });
+      return ctx.services.issueService.createIssue(ctx.userId, input);
     },
 
+    // Delegates to issueService
     updateIssue: async (_: unknown, { id, input }: UpdateIssueArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to update an issue.');
       }
-
-      return ctx.prisma.issue.update({
-        where: { id },
-        data: input,
-      });
+      return ctx.services.issueService.updateIssue(ctx.userId, id, input);
     },
 
+    // Delegates to issueService
     deleteIssue: async (_: unknown, { id }: IssueByIdArgs, ctx: Context) => {
       if (!ctx.userId) {
         throw new Error('Unauthorized: You must be logged in to delete an issue.');
       }
-
-      await ctx.prisma.issue.delete({
-        where: { id },
-      });
-      return true;
+      return ctx.services.issueService.deleteIssue(ctx.userId, id);
     },
   },
 
   Issue: {
+    // Resolves the 'author' field using userService
     author: async (parent: { authorId: string }, _: unknown, ctx: Context) => {
       return ctx.services.userService.getUserById(parent.authorId);
     },
 
+    // Resolves the 'repo' field using repoService
     repo: async (parent: { repoId: string }, _: unknown, ctx: Context) => {
       return ctx.services.repoService.getRepoById(parent.repoId);
     },
