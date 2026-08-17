@@ -33,7 +33,6 @@ export const getAllUsers = async ({ limit = 10, offset = 0 }: PaginationParams =
 };
 
 export const updateUser = async (id: string, data: UpdateUserInput) => {
-  // 1. Dynamically build the OR array so undefined values are never passed
   const orConditions = [];
   if (data.username !== undefined) {
     orConditions.push({ username: data.username });
@@ -42,7 +41,6 @@ export const updateUser = async (id: string, data: UpdateUserInput) => {
     orConditions.push({ email: data.email });
   }
 
-  // 2. Only run the collision check if there are actually fields to check
   if (orConditions.length > 0) {
     const existingUser = await prisma.user.findFirst({
       where: {
@@ -61,7 +59,6 @@ export const updateUser = async (id: string, data: UpdateUserInput) => {
     }
   }
 
-  // 3. Conditionally spread the data payload to strip out undefined keys safely
   return prisma.user.update({
     where: { id },
     data: {

@@ -19,9 +19,6 @@ export interface PaginationParams {
   offset?: number | undefined;
 }
 
-/**
- * Fetches a single issue by its ID.
- */
 export const getIssueById = async (id: string) => {
   const issue = await prisma.issue.findUnique({
     where: { id },
