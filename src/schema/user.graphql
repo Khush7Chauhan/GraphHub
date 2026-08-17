@@ -1,15 +1,9 @@
-# -----------------------------------------
-# User Types
-# -----------------------------------------
-
 type User {
   id: ID!
   username: String!
   email: String!
   createdAt: String!
   updatedAt: String!
-
-  # Relationships 
   repos: [Repo!]!
   issues: [Issue!]!
 }
@@ -18,10 +12,6 @@ type AuthPayload {
   token: String!
   user: User!
 }
-
-# -----------------------------------------
-# Inputs
-# -----------------------------------------
 
 input RegisterInput {
   username: String!
@@ -38,10 +28,6 @@ input UpdateUserInput {
   username: String
   email: String
 }
-
-# -----------------------------------------
-# Queries & Mutations
-# -----------------------------------------
 
 type Query {
   """
